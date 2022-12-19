@@ -123,8 +123,15 @@ resource "azurerm_management_lock" "delete_lock" {
   notes      = "Managed by Terraform"
 }
 
-resource "azurerm_security_center_subscription_pricing" "security_plans" {
+resource "azurerm_security_center_subscription_pricing" "security_plans_no_sub_plan" {
   for_each      = toset(local.defender_for_cloud_plans)
   tier          = "Standard"
   resource_type = each.key
+}
+
+resource "azurerm_security_center_subscription_pricing" "security_plans_sub_plan" {
+  for_each      = { for mdc_plans in local.defender_for_cloud_sub_plans : mdc_plans.plan => mdc_plans }
+  tier          = "Standard"
+  resource_type = each.value["plan"]
+  subplan       = each.value["sub_plan"]
 }
