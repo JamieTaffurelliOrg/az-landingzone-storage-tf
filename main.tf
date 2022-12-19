@@ -155,3 +155,8 @@ resource "azurerm_security_center_subscription_pricing" "security_plans_sub_plan
   resource_type = each.value["plan"]
   subplan       = each.value["sub_plan"]
 }
+
+resource "azurerm_security_center_workspace" "example" {
+  scope        = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
+  workspace_id = data.azurerm_log_analytics_workspace.logs.id
+}
