@@ -122,3 +122,9 @@ resource "azurerm_management_lock" "delete_lock" {
   lock_level = "CanNotDelete"
   notes      = "Managed by Terraform"
 }
+
+resource "azurerm_security_center_subscription_pricing" "security_plans" {
+  for_each      = toset(local.defender_for_cloud_plans)
+  tier          = "Standard"
+  resource_type = each.key
+}
