@@ -67,6 +67,16 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_diagnostics" {
       days    = 365
     }
   }
+
+  metric {
+    category = "Capacity"
+    enabled  = false
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
 }
 
 resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics" {
@@ -112,6 +122,16 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
     retention_policy {
       enabled = true
       days    = 365
+    }
+  }
+
+  metric {
+    category = "Capacity"
+    enabled  = false
+
+    retention_policy {
+      days    = 0
+      enabled = false
     }
   }
 }
