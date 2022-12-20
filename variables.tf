@@ -30,7 +30,7 @@ variable "storage_account_network_rules" {
   description = "The Storage Account firewall rules"
 }
 
-/*variable "log_analytics_workspace" {
+variable "log_analytics_workspace" {
   type = object(
     {
       name                = string
@@ -38,7 +38,7 @@ variable "storage_account_network_rules" {
     }
   )
   description = "The existing log analytics workspaces to send diagnostic logs to"
-}*/
+}
 
 variable "tags" {
   type        = map(string)

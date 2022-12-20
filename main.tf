@@ -54,7 +54,7 @@ resource "azurerm_storage_account_network_rules" "rules" {
   bypass                     = ["Logging", "Metrics", "AzureServices"]
 }
 
-/*resource "azurerm_monitor_diagnostic_setting" "storage_account_diagnostics" {
+resource "azurerm_monitor_diagnostic_setting" "storage_account_diagnostics" {
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = azurerm_storage_account.storage.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
@@ -114,7 +114,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
       days    = 365
     }
   }
-}*/
+}
 
 resource "azurerm_management_lock" "delete_lock" {
   name       = "resource-group-level"
