@@ -13,7 +13,7 @@ resource "azurerm_resource_group" "network_watcher_resource_group" {
 resource "azurerm_network_watcher" "logging" {
   for_each            = var.network_watchers
   name                = each.value.name
-  resource_group_name = var.network_watcher_resource_group_name
+  resource_group_name = azurerm_resource_group.network_watcher_resource_group.name
   location            = each.value.location
   tags                = var.tags
 }
