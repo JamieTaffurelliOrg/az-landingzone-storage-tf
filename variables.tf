@@ -13,6 +13,22 @@ variable "resource_group_name" {
   description = "The resource group of the storage account to store state files"
 }
 
+variable "network_watcher_resource_group_name" {
+  type        = string
+  description = "The resource group of the network watcher"
+}
+
+variable "network_watchers" {
+  type = map(object(
+    {
+      name     = string
+      location = string
+    }
+  ))
+  default     = {}
+  description = "Name and location of the Network Watchers to deploy"
+}
+
 variable "containers" {
   type        = list(string)
   description = "The storage account containers to store state files for each subscription"

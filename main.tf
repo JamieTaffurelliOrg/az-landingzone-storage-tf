@@ -4,6 +4,20 @@ resource "azurerm_resource_group" "resource_group" {
   tags     = var.tags
 }
 
+resource "azurerm_resource_group" "network_watcher_resource_group" {
+  name     = var.network_watcher_resource_group_name
+  location = var.location
+  tags     = var.tags
+}
+
+resource "azurerm_network_watcher" "logging" {
+  for_each            = var.network_watchers
+  name                = each.value.name
+  resource_group_name = var.resource_group_name
+  location            = each.value.location
+  tags                = var.tags
+}
+
 resource "azurerm_storage_account" "storage" {
   name                            = var.storage_account_name
   location                        = var.location
