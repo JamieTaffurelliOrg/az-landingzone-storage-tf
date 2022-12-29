@@ -157,6 +157,13 @@ resource "azurerm_management_lock" "delete_lock" {
   notes      = "Managed by Terraform"
 }
 
+resource "azurerm_management_lock" "network_watcher_delete_lock" {
+  name       = "resource-group-level"
+  scope      = azurerm_resource_group.network_watcher_resource_group.id
+  lock_level = "CanNotDelete"
+  notes      = "Managed by Terraform"
+}
+
 resource "azurerm_security_center_subscription_pricing" "security_plans_no_sub_plan" {
   for_each      = toset(local.defender_for_cloud_plans)
   tier          = "Standard"
