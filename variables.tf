@@ -56,6 +56,12 @@ variable "log_analytics_workspace" {
   description = "The existing log analytics workspaces to send diagnostic logs to"
 }
 
+variable "enable_aad_diagnostics" {
+  type        = bool
+  default     = false
+  description = "Enable AAD activity logs diagnostics setting, this only needs to be done in one configuration per tenant"
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to resource group and storage account"
