@@ -25,6 +25,7 @@ No modules.
 |------|------|
 | [azurerm_management_lock.delete_lock](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) | resource |
 | [azurerm_management_lock.network_watcher_delete_lock](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) | resource |
+| [azurerm_monitor_aad_diagnostic_setting.aad_diagnostics](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_aad_diagnostic_setting) | resource |
 | [azurerm_monitor_diagnostic_setting.activity_logs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
 | [azurerm_monitor_diagnostic_setting.storage_account_blob_diagnostics](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
 | [azurerm_monitor_diagnostic_setting.storage_account_diagnostics](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
@@ -45,6 +46,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_containers"></a> [containers](#input\_containers) | The storage account containers to store state files for each subscription | `list(string)` | n/a | yes |
+| <a name="input_enable_aad_diagnostics"></a> [enable\_aad\_diagnostics](#input\_enable\_aad\_diagnostics) | Enable AAD activity logs diagnostics setting, this only needs to be done in one configuration per tenant | `bool` | `false` | no |
 | <a name="input_location"></a> [location](#input\_location) | The location of the storage account to store state files | `string` | n/a | yes |
 | <a name="input_log_analytics_workspace"></a> [log\_analytics\_workspace](#input\_log\_analytics\_workspace) | The existing log analytics workspaces to send diagnostic logs to | <pre>object(<br>    {<br>      name                = string<br>      resource_group_name = string<br>    }<br>  )</pre> | n/a | yes |
 | <a name="input_network_watcher_resource_group_name"></a> [network\_watcher\_resource\_group\_name](#input\_network\_watcher\_resource\_group\_name) | The resource group of the network watcher | `string` | n/a | yes |
