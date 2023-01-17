@@ -46,17 +46,17 @@ variable "storage_account_network_rules" {
   description = "The Storage Account firewall rules"
 }
 
-variable "boot_diagnostic_storage_account" {
-  type = object(
+variable "boot_diagnostic_storage_accounts" {
+  type = list(object(
     {
-      name                       = optional(string)
-      resource_group_name        = optional(string)
+      name                       = string
+      resource_group_name        = string
       default_action             = optional(string, "Deny")
       ip_rules                   = optional(list(string), [])
       virtual_network_subnet_ids = optional(list(string), [])
     }
-  )
-  default     = {}
+  ))
+  default     = []
   description = "Deploy a storage account for boot diagnostics on VMs"
 }
 
