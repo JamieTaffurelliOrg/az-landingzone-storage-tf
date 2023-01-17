@@ -51,6 +51,7 @@ variable "boot_diagnostic_storage_accounts" {
     {
       name                       = string
       resource_group_name        = string
+      location                   = string
       default_action             = optional(string, "Deny")
       ip_rules                   = optional(list(string), [])
       virtual_network_subnet_ids = optional(list(string), [])
