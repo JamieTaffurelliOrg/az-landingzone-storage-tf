@@ -302,7 +302,7 @@ resource "azurerm_management_lock" "network_watcher_delete_lock" {
 resource "azurerm_management_lock" "boot_diag_delete_lock" {
   for_each   = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
   name       = "resource-group-level"
-  scope      = azurerm_storage_account.boot_diag_storage[(each.key)].id
+  scope      = azurerm_resource_group.boot_diag_resource_group[(each.key)].id
   lock_level = "CanNotDelete"
   notes      = "Managed by Terraform"
 }
