@@ -11,7 +11,7 @@ resource "azurerm_resource_group" "network_watcher_resource_group" {
 }
 
 resource "azurerm_resource_group" "boot_diag_resource_group" {
-  count    = var.boot_diagnostic_storage_account != {} ? 1 : 0
+  count    = var.boot_diagnostic_storage_account.name != null ? 1 : 0
   name     = var.boot_diagnostic_storage_account.resource_group_name
   location = var.location
   tags     = var.tags
@@ -158,7 +158,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
 }
 
 resource "azurerm_storage_account" "boot_diag_storage" {
-  count                           = var.boot_diagnostic_storage_account != {} ? 1 : 0
+  count                           = var.boot_diagnostic_storage_account.name != null ? 1 : 0
   name                            = var.boot_diagnostic_storage_account.name
   location                        = var.location
   resource_group_name             = azurerm_resource_group.boot_diag_resource_group[0].name
@@ -194,7 +194,7 @@ resource "azurerm_storage_account" "boot_diag_storage" {
 }
 
 resource "azurerm_storage_account_network_rules" "boot_diag_rules" {
-  count                      = var.boot_diagnostic_storage_account != {} ? 1 : 0
+  count                      = var.boot_diagnostic_storage_account.name != null ? 1 : 0
   storage_account_id         = azurerm_storage_account.boot_diag_storage[0].id
   default_action             = var.boot_diagnostic_storage_account.default_action
   ip_rules                   = var.boot_diagnostic_storage_account.ip_rules
@@ -203,7 +203,7 @@ resource "azurerm_storage_account_network_rules" "boot_diag_rules" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_diagnostics" {
-  count                      = var.boot_diagnostic_storage_account != {} ? 1 : 0
+  count                      = var.boot_diagnostic_storage_account.name != null ? 1 : 0
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = azurerm_storage_account.boot_diag_storage[0].id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
@@ -229,7 +229,7 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_diagnos
 }
 
 resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_diagnostics" {
-  for_each                   = var.boot_diagnostic_storage_account != {} ? toset(["blobServices", "fileServices", "tableServices", "queueServices"]) : null
+  for_each                   = var.boot_diagnostic_storage_account.name != null ? toset(["blobServices", "fileServices", "tableServices", "queueServices"]) : toset([])
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = "${azurerm_storage_account.boot_diag_storage[0].id}/${each.key}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
@@ -300,7 +300,7 @@ resource "azurerm_management_lock" "network_watcher_delete_lock" {
 }
 
 resource "azurerm_management_lock" "boot_diag_delete_lock" {
-  count      = var.boot_diagnostic_storage_account != {} ? 1 : 0
+  count      = var.boot_diagnostic_storage_account.name != null ? 1 : 0
   name       = "resource-group-level"
   scope      = azurerm_resource_group.boot_diag_resource_group[0].id
   lock_level = "CanNotDelete"
