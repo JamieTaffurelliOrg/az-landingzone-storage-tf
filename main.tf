@@ -161,7 +161,7 @@ resource "azurerm_storage_account" "boot_diag_storage" {
   for_each                        = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
   name                            = each.key
   location                        = each.value["location"]
-  resource_group_name             = azurerm_resource_group.boot_diag_resource_group[(each.value["resource_group_name"])]
+  resource_group_name             = azurerm_resource_group.boot_diag_resource_group[(each.key)].resource_group_name
   account_kind                    = "StorageV2"
   account_tier                    = "Standard"
   account_replication_type        = "GRS"
@@ -320,7 +320,7 @@ resource "azurerm_security_center_subscription_pricing" "security_plans_sub_plan
   subplan       = each.value["sub_plan"]
 }
 
-resource "azurerm_security_center_workspace" "example" {
+resource "azurerm_security_center_workspace" "workspace" {
   scope        = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
   workspace_id = data.azurerm_log_analytics_workspace.logs.id
 }
