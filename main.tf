@@ -231,7 +231,7 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_diagnos
 resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_diagnostics" {
   for_each                   = { for k in local.boot_diagnostic_settings : "${k.storage_account_name}-${k.service}" => k if k != null }
   name                       = "${var.log_analytics_workspace.name}-security-logging"
-  target_resource_id         = "${azurerm_storage_account.boot_diag_storage[(each.value["storage_account_name"])].id}/${each.key}/default/"
+  target_resource_id         = "${azurerm_storage_account.boot_diag_storage[(each.value["storage_account_name"])].id}/${each.value["service"]}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
 
   log {
