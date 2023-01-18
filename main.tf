@@ -161,7 +161,7 @@ resource "azurerm_storage_account" "boot_diag_storage" {
   for_each                        = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
   name                            = each.key
   location                        = each.value["location"]
-  resource_group_name             = azurerm_resource_group.boot_diag_resource_group[(each.key)].resource_group_name
+  resource_group_name             = azurerm_resource_group.boot_diag_resource_group[(each.key)].name
   account_kind                    = "StorageV2"
   account_tier                    = "Standard"
   account_replication_type        = "GRS"
