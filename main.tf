@@ -11,9 +11,9 @@ resource "azurerm_resource_group" "network_watcher_resource_group" {
 }
 
 resource "azurerm_resource_group" "boot_diag_resource_group" {
-  count    = var.boot_diagnostic_storage_account.name != null ? 1 : 0
-  name     = var.boot_diagnostic_storage_account.resource_group_name
-  location = var.location
+  for_each = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
+  name     = each.value["resource_group_name"]
+  location = each.value["location"]
   tags     = var.tags
 }
 
@@ -158,10 +158,10 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
 }
 
 resource "azurerm_storage_account" "boot_diag_storage" {
-  count                           = var.boot_diagnostic_storage_account.name != null ? 1 : 0
-  name                            = var.boot_diagnostic_storage_account.name
-  location                        = var.location
-  resource_group_name             = azurerm_resource_group.boot_diag_resource_group[0].name
+  for_each                        = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
+  name                            = each.key
+  location                        = each.value["location"]
+  resource_group_name             = azurerm_resource_group.boot_diag_resource_group[(each.value["resource_group_name"])]
   account_kind                    = "StorageV2"
   account_tier                    = "Standard"
   account_replication_type        = "GRS"
@@ -194,18 +194,18 @@ resource "azurerm_storage_account" "boot_diag_storage" {
 }
 
 resource "azurerm_storage_account_network_rules" "boot_diag_rules" {
-  count                      = var.boot_diagnostic_storage_account.name != null ? 1 : 0
-  storage_account_id         = azurerm_storage_account.boot_diag_storage[0].id
-  default_action             = var.boot_diagnostic_storage_account.default_action
-  ip_rules                   = var.boot_diagnostic_storage_account.ip_rules
-  virtual_network_subnet_ids = var.boot_diagnostic_storage_account.virtual_network_subnet_ids
+  for_each                   = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
+  storage_account_id         = azurerm_storage_account.boot_diag_storage[(each.key)].id
+  default_action             = each.value["default_action"]
+  ip_rules                   = each.value["ip_rules"]
+  virtual_network_subnet_ids = each.value["virtual_network_subnet_ids"]
   bypass                     = ["Logging", "Metrics", "AzureServices"]
 }
 
 resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_diagnostics" {
-  count                      = var.boot_diagnostic_storage_account.name != null ? 1 : 0
+  for_each                   = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
   name                       = "${var.log_analytics_workspace.name}-security-logging"
-  target_resource_id         = azurerm_storage_account.boot_diag_storage[0].id
+  target_resource_id         = azurerm_storage_account.boot_diag_storage[(each.key)].id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
 
   metric {
@@ -229,9 +229,9 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_diagnos
 }
 
 resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_diagnostics" {
-  for_each                   = var.boot_diagnostic_storage_account.name != null ? toset(["blobServices", "fileServices", "tableServices", "queueServices"]) : toset([])
+  for_each                   = { for k in local.boot_diagnostic_settings : "${k.storage_account_name}-${k.service}" => k if k != null }
   name                       = "${var.log_analytics_workspace.name}-security-logging"
-  target_resource_id         = "${azurerm_storage_account.boot_diag_storage[0].id}/${each.key}/default/"
+  target_resource_id         = "${azurerm_storage_account.boot_diag_storage[(each.value["storage_account_name"])].id}/${each.key}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
 
   log {
@@ -300,9 +300,9 @@ resource "azurerm_management_lock" "network_watcher_delete_lock" {
 }
 
 resource "azurerm_management_lock" "boot_diag_delete_lock" {
-  count      = var.boot_diagnostic_storage_account.name != null ? 1 : 0
+  for_each   = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
   name       = "resource-group-level"
-  scope      = azurerm_resource_group.boot_diag_resource_group[0].id
+  scope      = azurerm_storage_account.boot_diag_storage[(each.key)].id
   lock_level = "CanNotDelete"
   notes      = "Managed by Terraform"
 }

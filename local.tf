@@ -12,4 +12,12 @@ locals {
       sub_plan = "P2"
     }
   ]
+
+  boot_diagnostic_settings = distinct(flatten([
+    for bsa in var.boot_diagnostic_storage_accounts : [
+      for diag in ["blobServices", "fileServices", "tableServices", "queueServices"] : {
+        storage_account_name = bsa.name
+        service              = diag
+      }
+  ]]))
 }
