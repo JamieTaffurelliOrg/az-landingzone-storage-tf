@@ -64,10 +64,11 @@ variable "boot_diagnostic_storage_accounts" {
 variable "log_analytics_workspace" {
   type = object(
     {
-      name                = string
-      resource_group_name = string
+      name                = optional(string)
+      resource_group_name = optional(string)
     }
   )
+  default     = {}
   description = "The existing log analytics workspaces to send diagnostic logs to"
 }
 

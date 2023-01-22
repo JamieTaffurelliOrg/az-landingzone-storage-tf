@@ -76,6 +76,7 @@ resource "azurerm_storage_account_network_rules" "rules" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "storage_account_diagnostics" {
+  count                      = var.log_analytics_workspace.name != null ? 1 : 0
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = azurerm_storage_account.storage.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
@@ -101,7 +102,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_diagnostics" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics" {
-  for_each                   = toset(["blobServices", "fileServices", "tableServices", "queueServices"])
+  for_each                   = var.log_analytics_workspace.name != null ? toset(["blobServices", "fileServices", "tableServices", "queueServices"]) : toset([])
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = "${azurerm_storage_account.storage.id}/${each.key}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
@@ -203,7 +204,7 @@ resource "azurerm_storage_account_network_rules" "boot_diag_rules" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_diagnostics" {
-  for_each                   = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
+  for_each                   = var.log_analytics_workspace.name != null ? { for k in var.boot_diagnostic_storage_accounts : k.name => k } : toset([])
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = azurerm_storage_account.boot_diag_storage[(each.key)].id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
@@ -229,7 +230,7 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_diagnos
 }
 
 resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_diagnostics" {
-  for_each                   = { for k in local.boot_diagnostic_settings : "${k.storage_account_name}-${k.service}" => k if k != null }
+  for_each                   = var.log_analytics_workspace.name != null ? { for k in local.boot_diagnostic_settings : "${k.storage_account_name}-${k.service}" => k if k != null } : toset([])
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = "${azurerm_storage_account.boot_diag_storage[(each.value["storage_account_name"])].id}/${each.value["service"]}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
@@ -326,6 +327,7 @@ resource "azurerm_security_center_workspace" "workspace" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
+  count                      = var.log_analytics_workspace.name != null ? 1 : 0
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
