@@ -107,9 +107,8 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
   target_resource_id         = "${azurerm_storage_account.storage.id}/${each.key}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
-  log {
+  enabled_log {
     category = "StorageRead"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -117,9 +116,8 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
     }
   }
 
-  log {
+  enabled_log {
     category = "StorageWrite"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -127,9 +125,8 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
     }
   }
 
-  log {
+  enabled_log {
     category = "StorageDelete"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -235,9 +232,8 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_di
   target_resource_id         = "${azurerm_storage_account.boot_diag_storage[(each.value["storage_account_name"])].id}/${each.value["service"]}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
-  log {
+  enabled_log {
     category = "StorageRead"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -245,9 +241,8 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_di
     }
   }
 
-  log {
+  enabled_log {
     category = "StorageWrite"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -255,9 +250,8 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_di
     }
   }
 
-  log {
+  enabled_log {
     category = "StorageDelete"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -338,9 +332,8 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
   target_resource_id         = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
-  log {
+  enabled_log {
     category = "Administrative"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -348,9 +341,8 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  log {
+  enabled_log {
     category = "Security"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -358,9 +350,8 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  log {
+  enabled_log {
     category = "ServiceHealth"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -368,9 +359,8 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  log {
+  enabled_log {
     category = "Alert"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -378,9 +368,8 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  log {
+  enabled_log {
     category = "Recommendation"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -388,9 +377,8 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  log {
+  enabled_log {
     category = "Policy"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -398,9 +386,8 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  log {
+  enabled_log {
     category = "Autoscale"
-    enabled  = true
 
     retention_policy {
       enabled = true
@@ -408,9 +395,8 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  log {
+  enabled_log {
     category = "ResourceHealth"
-    enabled  = true
 
     retention_policy {
       enabled = true
