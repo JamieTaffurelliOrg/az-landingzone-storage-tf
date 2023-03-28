@@ -79,7 +79,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_diagnostics" {
   count                      = var.log_analytics_workspace.name != null ? 1 : 0
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = azurerm_storage_account.storage.id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
   metric {
     category = "Transaction"
@@ -105,7 +105,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
   for_each                   = var.log_analytics_workspace.name != null ? toset(["blobServices", "fileServices", "tableServices", "queueServices"]) : toset([])
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = "${azurerm_storage_account.storage.id}/${each.key}/default/"
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
   log {
     category = "StorageRead"
@@ -207,7 +207,7 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_diagnos
   for_each                   = var.log_analytics_workspace.name != null ? { for k in var.boot_diagnostic_storage_accounts : k.name => k } : {}
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = azurerm_storage_account.boot_diag_storage[(each.key)].id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
   metric {
     category = "Transaction"
@@ -233,7 +233,7 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_di
   for_each                   = var.log_analytics_workspace.name != null ? { for k in local.boot_diagnostic_settings : "${k.storage_account_name}-${k.service}" => k if k != null } : {}
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = "${azurerm_storage_account.boot_diag_storage[(each.value["storage_account_name"])].id}/${each.value["service"]}/default/"
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
   log {
     category = "StorageRead"
@@ -322,15 +322,21 @@ resource "azurerm_security_center_subscription_pricing" "security_plans_sub_plan
 }
 
 resource "azurerm_security_center_workspace" "workspace" {
+  count        = var.log_analytics_workspace.name != null ? 1 : 0
   scope        = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
-  workspace_id = data.azurerm_log_analytics_workspace.logs.id
+  workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
+}
+
+resource "azurerm_resource_provider_registration" "provider" {
+  for_each = toset(var.registered_providers)
+  name     = each.key
 }
 
 resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
   count                      = var.log_analytics_workspace.name != null ? 1 : 0
   name                       = "${var.log_analytics_workspace.name}-security-logging"
   target_resource_id         = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs.id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
   log {
     category = "Administrative"

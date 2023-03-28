@@ -61,6 +61,12 @@ variable "boot_diagnostic_storage_accounts" {
   description = "Deploy a storage account for boot diagnostics on VMs"
 }
 
+variable "registered_providers" {
+  type        = list(string)
+  default     = []
+  description = "Enable Resource Providers on the subscription"
+}
+
 variable "log_analytics_workspace" {
   type = object(
     {
