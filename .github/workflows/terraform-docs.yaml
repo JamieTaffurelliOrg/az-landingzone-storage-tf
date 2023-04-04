@@ -2,6 +2,8 @@ on: pull_request
 
 concurrency: ci-${{ github.workflow }}-${{ github.ref }}
 
+permissions: read-all
+
 jobs:
   docs:
     runs-on: ubuntu-latest

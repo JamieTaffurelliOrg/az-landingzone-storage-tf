@@ -5,6 +5,20 @@ on:
 
 concurrency: ci-${{ github.workflow }}-${{ github.ref }}
 
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  deployments: read
+  issues: read
+  discussions: read
+  packages: read
+  pages: read
+  pull-requests: read
+  repository-projects: read
+  security-events: read
+  statuses: read
+
 jobs:
   release:
     environment: deploy

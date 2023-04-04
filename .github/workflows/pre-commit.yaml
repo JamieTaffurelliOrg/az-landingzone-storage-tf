@@ -2,6 +2,8 @@ on: pull_request
 
 concurrency: ci-${{ github.workflow }}-${{ github.ref }}
 
+permissions: read-all
+
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
