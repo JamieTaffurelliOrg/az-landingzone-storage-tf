@@ -26,6 +26,11 @@ resource "azurerm_network_watcher" "logging" {
 }
 
 resource "azurerm_storage_account" "storage" {
+  #checkov:skip=CKV2_AZURE_33:This is an old way of logging, diagnostics are enabled
+  #checkov:skip=CKV_AZURE_33:This is an old way of logging, diagnostics are enabled
+  #checkov:skip=CKV2_AZURE_18:This is unnecessary for most scenarios
+  #checkov:skip=CKV2_AZURE_1:We may require some storage accounts to not have firewalls
+  #checkov:skip=CKV_AZURE_59:Value is deprecated
   name                            = var.storage_account_name
   location                        = var.location
   resource_group_name             = azurerm_resource_group.resource_group.name
@@ -61,6 +66,7 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_storage_container" "container" {
+  #checkov:skip=CKV2_AZURE_21:This is an old way of logging, diagnostics are enabled
   for_each              = toset(var.containers)
   name                  = each.key
   storage_account_name  = azurerm_storage_account.storage.name
@@ -68,6 +74,7 @@ resource "azurerm_storage_container" "container" {
 }
 
 resource "azurerm_storage_account_network_rules" "rules" {
+  #checkov:skip=CKV_AZURE_35:We may require these storage accounts to be publicly accessible
   storage_account_id         = azurerm_storage_account.storage.id
   default_action             = var.storage_account_network_rules.default_action
   ip_rules                   = var.storage_account_network_rules.ip_rules
@@ -107,7 +114,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
   target_resource_id         = "${azurerm_storage_account.storage.id}/${each.key}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
-  enabled_log {
+  log {
     category = "StorageRead"
 
     retention_policy {
@@ -116,7 +123,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
     }
   }
 
-  enabled_log {
+  log {
     category = "StorageWrite"
 
     retention_policy {
@@ -125,7 +132,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
     }
   }
 
-  enabled_log {
+  log {
     category = "StorageDelete"
 
     retention_policy {
@@ -156,6 +163,12 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
 }
 
 resource "azurerm_storage_account" "boot_diag_storage" {
+  #checkov:skip=CKV2_AZURE_33:This is an old way of logging, diagnostics are enabled
+  #checkov:skip=CKV_AZURE_33:This is an old way of logging, diagnostics are enabled
+  #checkov:skip=CKV2_AZURE_18:This is unnecessary for most scenarios
+  #checkov:skip=CKV2_AZURE_1:We may require some storage accounts to not have firewalls
+  #checkov:skip=CKV_AZURE_59:Value is deprecated
+  #checkov:skip=CKV_AZURE_43:Name is determined by user
   for_each                        = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
   name                            = each.key
   location                        = each.value["location"]
@@ -192,6 +205,7 @@ resource "azurerm_storage_account" "boot_diag_storage" {
 }
 
 resource "azurerm_storage_account_network_rules" "boot_diag_rules" {
+  #checkov:skip=CKV_AZURE_35:We may require these storage accounts to be publicly accessible
   for_each                   = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
   storage_account_id         = azurerm_storage_account.boot_diag_storage[(each.key)].id
   default_action             = each.value["default_action"]
@@ -232,7 +246,7 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_di
   target_resource_id         = "${azurerm_storage_account.boot_diag_storage[(each.value["storage_account_name"])].id}/${each.value["service"]}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
-  enabled_log {
+  log {
     category = "StorageRead"
 
     retention_policy {
@@ -241,7 +255,7 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_di
     }
   }
 
-  enabled_log {
+  log {
     category = "StorageWrite"
 
     retention_policy {
@@ -250,7 +264,7 @@ resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_di
     }
   }
 
-  enabled_log {
+  log {
     category = "StorageDelete"
 
     retention_policy {
@@ -332,7 +346,7 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
   target_resource_id         = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
-  enabled_log {
+  log {
     category = "Administrative"
 
     retention_policy {
@@ -341,7 +355,7 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  enabled_log {
+  log {
     category = "Security"
 
     retention_policy {
@@ -350,7 +364,7 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  enabled_log {
+  log {
     category = "ServiceHealth"
 
     retention_policy {
@@ -359,7 +373,7 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  enabled_log {
+  log {
     category = "Alert"
 
     retention_policy {
@@ -368,7 +382,7 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  enabled_log {
+  log {
     category = "Recommendation"
 
     retention_policy {
@@ -377,7 +391,7 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  enabled_log {
+  log {
     category = "Policy"
 
     retention_policy {
@@ -386,7 +400,7 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  enabled_log {
+  log {
     category = "Autoscale"
 
     retention_policy {
@@ -395,7 +409,7 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
     }
   }
 
-  enabled_log {
+  log {
     category = "ResourceHealth"
 
     retention_policy {
