@@ -9,7 +9,7 @@ env:
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  TERRAFORM_VERSION: 1.4.4
+  TERRAFORM_VERSION: 1.5.1
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
