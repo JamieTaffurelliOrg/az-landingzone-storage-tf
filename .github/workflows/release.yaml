@@ -20,29 +20,6 @@ permissions:
   statuses: read
 
 jobs:
-  release:
-    environment: deploy
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    - name: Version Module
-      id: version-module
-      uses: paulhatch/semantic-version@v4
-      with:
-        tag_prefix: ""
-        major_pattern: (MAJOR)
-        minor_pattern: (MINOR)
-        format: ${major}.${minor}.${patch}
-        bump_each_commit: false
-        change_path: main.tf outputs.tf providers.tf variables.tf data.tf local.tf arm
-
-    - name: Release Module
-      uses: ncipollo/release-action@v1
-      with:
-        generateReleaseNotes: true
-        tag: ${{ steps.version-module.outputs.version }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+  call-release-workflow:
+    uses: JamieTaffurelliOrg/github-actions-templates/.github/workflows/release-template.yaml@main
+    secrets: inherit
