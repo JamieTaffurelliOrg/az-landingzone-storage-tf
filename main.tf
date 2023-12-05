@@ -10,13 +10,6 @@ resource "azurerm_resource_group" "network_watcher_resource_group" {
   tags     = var.tags
 }
 
-resource "azurerm_resource_group" "boot_diag_resource_group" {
-  for_each = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
-  name     = each.value["resource_group_name"]
-  location = each.value["location"]
-  tags     = var.tags
-}
-
 resource "azurerm_network_watcher" "logging" {
   for_each            = var.network_watchers
   name                = each.value.name
@@ -41,7 +34,7 @@ resource "azurerm_storage_account" "storage" {
   enable_https_traffic_only       = true
   min_tls_version                 = "TLS1_2"
   allow_nested_items_to_be_public = false
-  shared_access_key_enabled       = true
+  shared_access_key_enabled       = false
   default_to_oauth_authentication = true
 
   blob_properties {
@@ -162,138 +155,6 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
   }
 }
 
-resource "azurerm_storage_account" "boot_diag_storage" {
-  #checkov:skip=CKV2_AZURE_33:This is an old way of logging, diagnostics are enabled
-  #checkov:skip=CKV_AZURE_33:This is an old way of logging, diagnostics are enabled
-  #checkov:skip=CKV2_AZURE_18:This is unnecessary for most scenarios
-  #checkov:skip=CKV2_AZURE_1:We may require some storage accounts to not have firewalls
-  #checkov:skip=CKV_AZURE_59:Value is deprecated
-  #checkov:skip=CKV_AZURE_43:Name is determined by user
-  for_each                        = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
-  name                            = each.key
-  location                        = each.value["location"]
-  resource_group_name             = azurerm_resource_group.boot_diag_resource_group[(each.key)].name
-  account_kind                    = "StorageV2"
-  account_tier                    = "Standard"
-  account_replication_type        = "GRS"
-  access_tier                     = "Hot"
-  enable_https_traffic_only       = true
-  min_tls_version                 = "TLS1_2"
-  allow_nested_items_to_be_public = false
-  shared_access_key_enabled       = true
-  default_to_oauth_authentication = true
-
-  blob_properties {
-    versioning_enabled            = true
-    change_feed_enabled           = true
-    change_feed_retention_in_days = 365
-    last_access_time_enabled      = true
-
-    delete_retention_policy {
-      days = 365
-    }
-
-    container_delete_retention_policy {
-      days = 365
-    }
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
-  tags = var.tags
-}
-
-resource "azurerm_storage_account_network_rules" "boot_diag_rules" {
-  #checkov:skip=CKV_AZURE_35:We may require these storage accounts to be publicly accessible
-  for_each                   = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
-  storage_account_id         = azurerm_storage_account.boot_diag_storage[(each.key)].id
-  default_action             = each.value["default_action"]
-  ip_rules                   = each.value["ip_rules"]
-  virtual_network_subnet_ids = each.value["virtual_network_subnet_ids"]
-  bypass                     = ["Logging", "Metrics", "AzureServices"]
-}
-
-resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_diagnostics" {
-  for_each                   = var.log_analytics_workspace.name != null ? { for k in var.boot_diagnostic_storage_accounts : k.name => k } : {}
-  name                       = "${var.log_analytics_workspace.name}-security-logging"
-  target_resource_id         = azurerm_storage_account.boot_diag_storage[(each.key)].id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
-
-  metric {
-    category = "Transaction"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
-  }
-
-  metric {
-    category = "Capacity"
-    enabled  = false
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "boot_diag_storage_account_blob_diagnostics" {
-  for_each                   = var.log_analytics_workspace.name != null ? { for k in local.boot_diagnostic_settings : "${k.storage_account_name}-${k.service}" => k if k != null } : {}
-  name                       = "${var.log_analytics_workspace.name}-security-logging"
-  target_resource_id         = "${azurerm_storage_account.boot_diag_storage[(each.value["storage_account_name"])].id}/${each.value["service"]}/default/"
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
-
-  log {
-    category = "StorageRead"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
-  }
-
-  log {
-    category = "StorageWrite"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
-  }
-
-  log {
-    category = "StorageDelete"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
-  }
-
-  metric {
-    category = "Transaction"
-    enabled  = true
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
-  }
-
-  metric {
-    category = "Capacity"
-    enabled  = false
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-}
-
 resource "azurerm_management_lock" "delete_lock" {
   name       = "resource-group-level"
   scope      = azurerm_resource_group.resource_group.id
@@ -308,21 +169,15 @@ resource "azurerm_management_lock" "network_watcher_delete_lock" {
   notes      = "Managed by Terraform"
 }
 
-resource "azurerm_management_lock" "boot_diag_delete_lock" {
-  for_each   = { for k in var.boot_diagnostic_storage_accounts : k.name => k }
-  name       = "resource-group-level"
-  scope      = azurerm_resource_group.boot_diag_resource_group[(each.key)].id
-  lock_level = "CanNotDelete"
-  notes      = "Managed by Terraform"
-}
-
 resource "azurerm_security_center_subscription_pricing" "security_plans_no_sub_plan" {
+  #checkov:skip=CKV_AZURE_234:ARM is enabled, plus many more
   for_each      = toset(local.defender_for_cloud_plans)
   tier          = "Standard"
   resource_type = each.key
 }
 
 resource "azurerm_security_center_subscription_pricing" "security_plans_sub_plan" {
+  #checkov:skip=CKV_AZURE_234:ARM is enabled, plus many more
   for_each      = { for mdc_plans in local.defender_for_cloud_sub_plans : mdc_plans.plan => mdc_plans }
   tier          = "Standard"
   resource_type = each.value["plan"]
