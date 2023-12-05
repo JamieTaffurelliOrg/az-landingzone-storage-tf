@@ -8,6 +8,6 @@ jobs:
   call-terraform-module-pre-commit-workflow:
     uses: JamieTaffurelliOrg/github-actions-templates/.github/workflows/terraform-module-pre-commit-template.yaml@main
     with:
-      terraform-version: '1.5.1'
+      terraform-version: '1.6.4'
       go-version: '1.18'
     secrets: inherit
