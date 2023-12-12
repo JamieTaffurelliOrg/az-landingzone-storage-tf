@@ -83,21 +83,11 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_diagnostics" {
 
   metric {
     category = "Transaction"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
   metric {
     category = "Capacity"
     enabled  = false
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
   }
 }
 
@@ -109,49 +99,24 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
 
   log {
     category = "StorageRead"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
   log {
     category = "StorageWrite"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
   log {
     category = "StorageDelete"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
   metric {
     category = "Transaction"
     enabled  = true
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
   metric {
     category = "Capacity"
     enabled  = false
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
   }
 }
 
