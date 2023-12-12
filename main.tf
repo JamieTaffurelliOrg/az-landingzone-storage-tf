@@ -160,6 +160,13 @@ resource "azurerm_management_lock" "delete_lock" {
   scope      = azurerm_resource_group.resource_group.id
   lock_level = "CanNotDelete"
   notes      = "Managed by Terraform"
+  depends_on = [
+    azurerm_monitor_diagnostic_setting.storage_account_blob_diagnostics,
+    azurerm_monitor_diagnostic_setting.storage_account_diagnostics,
+    azurerm_storage_account_network_rules.rules,
+    azurerm_storage_container.container,
+    azurerm_network_watcher.logging
+  ]
 }
 
 resource "azurerm_management_lock" "network_watcher_delete_lock" {
