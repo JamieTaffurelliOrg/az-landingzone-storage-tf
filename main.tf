@@ -5,17 +5,17 @@ resource "azurerm_resource_group" "resource_group" {
 }
 
 resource "azurerm_resource_group" "network_watcher_resource_group" {
-  name     = var.network_watcher_resource_group.name
+  name     = var.network_watchers.name
   location = var.location
-  tags     = var.network_watcher_resource_group.tags
+  tags     = var.network_watchers.tags
 }
 
 resource "azurerm_network_watcher" "logging" {
-  for_each            = var.network_watchers
+  for_each            = var.network_watchers.network_watchers
   name                = each.value.name
   resource_group_name = azurerm_resource_group.network_watcher_resource_group.name
   location            = each.value.location
-  tags                = var.network_watcher_resource_group.tags
+  tags                = var.network_watchers.tags
 }
 
 resource "azurerm_storage_account" "storage" {
