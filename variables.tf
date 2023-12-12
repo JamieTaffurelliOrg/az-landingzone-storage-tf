@@ -13,8 +13,11 @@ variable "resource_group_name" {
   description = "The resource group of the storage account to store state files"
 }
 
-variable "network_watcher_resource_group_name" {
-  type        = string
+variable "network_watcher_resource_group" {
+  type = object({
+    name = string
+    tags = map(string)
+  })
   description = "The resource group of the network watcher"
 }
 

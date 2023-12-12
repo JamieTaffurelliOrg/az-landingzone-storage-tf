@@ -5,9 +5,9 @@ resource "azurerm_resource_group" "resource_group" {
 }
 
 resource "azurerm_resource_group" "network_watcher_resource_group" {
-  name     = var.network_watcher_resource_group_name
+  name     = var.network_watcher_resource_group.name
   location = var.location
-  tags     = var.tags
+  tags     = var.network_watcher_resource_group.tags
 }
 
 resource "azurerm_network_watcher" "logging" {
@@ -15,7 +15,7 @@ resource "azurerm_network_watcher" "logging" {
   name                = each.value.name
   resource_group_name = azurerm_resource_group.network_watcher_resource_group.name
   location            = each.value.location
-  tags                = var.tags
+  tags                = var.network_watcher_resource_group.tags
 }
 
 resource "azurerm_storage_account" "storage" {
