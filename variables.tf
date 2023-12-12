@@ -16,7 +16,7 @@ variable "resource_group_name" {
 variable "network_watchers" {
   type = object(
     {
-      name = string
+      resource_group_name = string
       network_watchers = map(object({
         name     = string
         location = string

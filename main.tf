@@ -5,7 +5,7 @@ resource "azurerm_resource_group" "resource_group" {
 }
 
 resource "azurerm_resource_group" "network_watcher_resource_group" {
-  name     = var.network_watchers.name
+  name     = var.network_watchers.resource_group_name
   location = var.location
   tags     = var.network_watchers.tags
 }
