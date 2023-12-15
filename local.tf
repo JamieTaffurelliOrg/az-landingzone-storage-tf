@@ -1,6 +1,6 @@
 locals {
   defender_for_cloud_plans = [
-    "AppServices", "ContainerRegistry", "KeyVaults", "KubernetesService", "SqlServers", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "Containers", "Dns"
+    "AppServices", "ContainerRegistry", "KubernetesService", "SqlServers", "SqlServerVirtualMachines", "OpenSourceRelationalDatabases", "Containers", "Dns"
   ]
   defender_for_cloud_sub_plans = [
     {
@@ -10,6 +10,14 @@ locals {
     {
       plan     = "VirtualMachines"
       sub_plan = "P2"
+    },
+    {
+      plan     = "Arm"
+      sub_plan = "PerApiCall"
+    },
+    {
+      plan     = "KeyVaults"
+      sub_plan = "PerTransaction"
     }
   ]
 }
