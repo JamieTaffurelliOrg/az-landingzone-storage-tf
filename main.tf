@@ -97,15 +97,15 @@ resource "azurerm_monitor_diagnostic_setting" "storage_account_blob_diagnostics"
   target_resource_id         = "${azurerm_storage_account.storage.id}/${each.key}/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
-  log {
+  enabled_log {
     category = "StorageRead"
   }
 
-  log {
+  enabled_log {
     category = "StorageWrite"
   }
 
-  log {
+  enabled_log {
     category = "StorageDelete"
   }
 
@@ -173,75 +173,35 @@ resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
   target_resource_id         = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logs[0].id
 
-  log {
+  enabled_log {
     category = "Administrative"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
-  log {
+  enabled_log {
     category = "Security"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
-  log {
+  enabled_log {
     category = "ServiceHealth"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
-  log {
+  enabled_log {
     category = "Alert"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
-  log {
+  enabled_log {
     category = "Recommendation"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
-  log {
+  enabled_log {
     category = "Policy"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
-  log {
+  enabled_log {
     category = "Autoscale"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 
-  log {
+  enabled_log {
     category = "ResourceHealth"
-
-    retention_policy {
-      enabled = true
-      days    = 365
-    }
   }
 }
