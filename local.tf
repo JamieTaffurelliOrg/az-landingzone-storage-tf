@@ -20,4 +20,27 @@ locals {
       sub_plan = "PerTransaction"
     }
   ]
+  budgets = length(var.budgets) == 0 ? tolist([
+    {
+      budgetName = "cost-budget"
+      amount     = 1000
+      category   = "Cost"
+      notifications = tomap({
+        "BudgetExceeded" = {
+          enabled       = true
+          operator      = "GreaterThan"
+          threshold     = 90
+          contactEmails = var.cost_email_addresses
+        }
+        "BudgetForecastExceeded" = {
+          enabled       = true
+          operator      = "GreaterThan"
+          threshold     = 110
+          contactEmails = var.cost_email_addresses
+          thresholdType = "Forecasted"
+        }
+      })
+      timeGrain = "Monthly"
+    }
+  ]) : var.budgets
 }

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "outputs": {},
+  "parameters": {
+    "amount": {
+      "type": "Int"
+    },
+    "budgetName": {
+      "type": "String"
+    },
+    "category": {
+      "allowedValues": [
+        "Cost",
+        "Usage"
+      ],
+      "type": "String"
+    },
+    "endDate": {
+      "type": "String"
+    },
+    "filter": {
+      "type": "Object"
+    },
+    "notifications": {
+      "type": "Object"
+    },
+    "startDate": {
+      "type": "String"
+    },
+    "timeGrain": {
+      "type": "String"
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2019-04-01-preview",
+      "name": "[parameters('budgetName')]",
+      "properties": {
+        "amount": "[parameters('amount')]",
+        "category": "[parameters('category')]",
+        "filter": "[parameters('filter')]",
+        "notifications": "[parameters('notifications')]",
+        "timeGrain": "[parameters('timeGrain')]",
+        "timePeriod": {
+          "endDate": "[parameters('endDate')]",
+          "startDate": "[parameters('startDate')]"
+        }
+      },
+      "type": "Microsoft.CostManagement/budgets"
+    }
+  ],
+  "variables": {}
+}
