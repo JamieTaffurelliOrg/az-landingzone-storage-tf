@@ -23,6 +23,7 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [azurerm_cost_anomaly_alert.cost_anomaly](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cost_anomaly_alert) | resource |
 | [azurerm_management_lock.delete_lock](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) | resource |
 | [azurerm_management_lock.network_watcher_delete_lock](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) | resource |
 | [azurerm_monitor_diagnostic_setting.activity_logs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
@@ -38,17 +39,21 @@ No modules.
 | [azurerm_storage_account.storage](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
 | [azurerm_storage_account_network_rules.rules](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_network_rules) | resource |
 | [azurerm_storage_container.container](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) | resource |
+| [azurerm_subscription_template_deployment.budget_template](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subscription_template_deployment) | resource |
 | [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
 | [azurerm_log_analytics_workspace.logs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/log_analytics_workspace) | data source |
+| [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_budgets"></a> [budgets](#input\_budgets) | Budgets to apply | <pre>list(object({<br>    name     = string<br>    amount   = number<br>    category = string<br>    filter   = optional(map(string), {})<br>    notifications = map(object({<br>      enabled       = optional(bool, true)<br>      operator      = string<br>      threshold     = number<br>      contactEmails = optional(list(string))<br>      thresholdType = optional(string, "Actual")<br>    }))<br>    time_grain = optional(string, "Monthy")<br>    end_date   = optional(string, "")<br>    start_date = optional(string, "")<br>  }))</pre> | `[]` | no |
 | <a name="input_containers"></a> [containers](#input\_containers) | The storage account containers to store state files for each subscription | `list(string)` | n/a | yes |
+| <a name="input_cost_email_addresses"></a> [cost\_email\_addresses](#input\_cost\_email\_addresses) | Email addresses to send cost alerts to | `list(string)` | n/a | yes |
 | <a name="input_location"></a> [location](#input\_location) | The location of the storage account to store state files | `string` | n/a | yes |
 | <a name="input_log_analytics_workspace"></a> [log\_analytics\_workspace](#input\_log\_analytics\_workspace) | The existing log analytics workspaces to send diagnostic logs to | <pre>object(<br>    {<br>      name                = optional(string)<br>      resource_group_name = optional(string)<br>    }<br>  )</pre> | `{}` | no |
-| <a name="input_network_watchers"></a> [network\_watchers](#input\_network\_watchers) | Name and location of the Network Watchers to deploy | <pre>object(<br>    {<br>      name = string<br>      network_watchers = map(object({<br>        name     = string<br>        location = string<br>      }))<br>      tags = map(string)<br>    }<br>  )</pre> | n/a | yes |
+| <a name="input_network_watchers"></a> [network\_watchers](#input\_network\_watchers) | Name and location of the Network Watchers to deploy | <pre>object(<br>    {<br>      resource_group_name = string<br>      network_watchers = map(object({<br>        name     = string<br>        location = string<br>      }))<br>      tags = map(string)<br>    }<br>  )</pre> | n/a | yes |
 | <a name="input_registered_providers"></a> [registered\_providers](#input\_registered\_providers) | Enable Resource Providers on the subscription | `list(string)` | `[]` | no |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The resource group of the storage account to store state files | `string` | n/a | yes |
 | <a name="input_storage_account_name"></a> [storage\_account\_name](#input\_storage\_account\_name) | The name of the storage account to store state files | `string` | n/a | yes |
