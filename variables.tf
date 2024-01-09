@@ -57,22 +57,20 @@ variable "cost_email_addresses" {
 
 variable "budgets" {
   type = list(object({
-    budgetName = string
-    amount     = number
-    category   = string
-    filter     = optional(map(string), {})
+    name     = string
+    amount   = number
+    category = string
+    filter   = optional(map(string), {})
     notifications = map(object({
       enabled       = optional(bool, true)
       operator      = string
       threshold     = number
       contactEmails = optional(list(string))
-      contactRoles  = optional(list(string))
-      contactGroups = optional(list(string))
-      thresholdType = optional(string)
+      thresholdType = optional(string, "Actual")
     }))
-    timeGrain = optional(string, "Monthy")
-    endDate   = optional(string, "")
-    startDate = optional(string)
+    time_grain = optional(string, "Monthy")
+    end_date   = optional(string, "")
+    start_date = optional(string, "")
   }))
   default     = []
   description = "Budgets to apply"

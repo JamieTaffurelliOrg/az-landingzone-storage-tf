@@ -22,15 +22,17 @@ locals {
   ]
   budgets = length(var.budgets) == 0 ? tolist([
     {
-      budgetName = "cost-budget"
-      amount     = 1000
-      category   = "Cost"
+      name     = "cost-budget"
+      amount   = 1000
+      category = "Cost"
+      filter   = tomap({ "" = "" })
       notifications = tomap({
         "BudgetExceeded" = {
           enabled       = true
           operator      = "GreaterThan"
           threshold     = 90
           contactEmails = var.cost_email_addresses
+          thresholdType = "Actual"
         }
         "BudgetForecastExceeded" = {
           enabled       = true
@@ -40,7 +42,9 @@ locals {
           thresholdType = "Forecasted"
         }
       })
-      timeGrain = "Monthly"
+      time_grain = "Monthly"
+      end_date   = ""
+      start_date = ""
     }
   ]) : var.budgets
 }
