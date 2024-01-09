@@ -50,6 +50,32 @@ variable "registered_providers" {
   description = "Enable Resource Providers on the subscription"
 }
 
+variable "cost_email_addresses" {
+  type        = list(string)
+  description = "Email addresses to send cost alerts to"
+}
+
+variable "budgets" {
+  type = list(object({
+    name     = string
+    amount   = number
+    category = string
+    filter   = optional(map(string), {})
+    notifications = map(object({
+      enabled       = optional(bool, true)
+      operator      = string
+      threshold     = number
+      contactEmails = optional(list(string))
+      thresholdType = optional(string, "Actual")
+    }))
+    time_grain = optional(string, "Monthy")
+    end_date   = optional(string, "")
+    start_date = optional(string, "")
+  }))
+  default     = []
+  description = "Budgets to apply"
+}
+
 variable "log_analytics_workspace" {
   type = object(
     {

@@ -167,6 +167,46 @@ resource "azurerm_resource_provider_registration" "provider" {
   name     = each.key
 }
 
+resource "azurerm_cost_anomaly_alert" "cost_anomaly" {
+  name            = "${data.azurerm_subscription.current.display_name}-daily-anomaly-by-resource-group"
+  display_name    = "${data.azurerm_subscription.current.display_name} Daily Anomaly by Resource Group"
+  email_subject   = "${data.azurerm_subscription.current.display_name} Daily Anomaly by Resource Group"
+  email_addresses = var.cost_email_addresses
+}
+
+resource "azurerm_subscription_template_deployment" "budget_template" {
+  for_each         = { for budget in local.budgets : budget.name => budget }
+  name             = "${data.azurerm_subscription.current.display_name}-${each.key}"
+  template_content = file("arm/budgetTemplate.json")
+  location         = var.location
+  parameters_content = jsonencode({
+    "budgetName" = {
+      value = "${data.azurerm_subscription.current.display_name}-${each.key}"
+    },
+    "amount" = {
+      value = each.value["amount"]
+    },
+    "category" = {
+      value = each.value["category"]
+    },
+    "filter" = {
+      value = keys(each.value["filter"])[0] == "" ? {} : each.value["filter"]
+    },
+    "notifications" = {
+      value = each.value["notifications"]
+    },
+    "timeGrain" = {
+      value = each.value["time_grain"]
+    },
+    "endDate" = {
+      value = each.value["end_date"]
+    },
+    "startDate" = {
+      value = each.value["start_date"] == "" ? "${formatdate("YYYY-MM", timestamp())}-01" : each.value["start_date"]
+    }
+  })
+}
+
 resource "azurerm_monitor_diagnostic_setting" "activity_logs" {
   count                      = var.log_analytics_workspace.name != null ? 1 : 0
   name                       = "${var.log_analytics_workspace.name}-security-logging"
